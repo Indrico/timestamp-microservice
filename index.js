@@ -19,9 +19,18 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+app.get('/api/', function (req, res) {
+  let date1 = new Date();
+  res.json({
+    unix: Math.floor(date1.getTime()),
+    utc: date1.toGMTString(),
+  })
+})
+
 // your first API endpoint...
 app.get('/api/:date', function (req, res) {
   const { date } = req.params;
+
   let date1 = new Date(date);
   if ((Object.prototype.toString.call(date1) === '[object Date]' && date1 != "Invalid Date")) {
     res.json({
@@ -29,13 +38,18 @@ app.get('/api/:date', function (req, res) {
       utc: date1.toGMTString(),
     })
   }
-  else {
-    res.json({
-      unix: parseInt(date),
-      utc: new Date(parseInt(date)).toGMTString()
-    })
+  else if (new Date(parseInt(date))) {
+    if (parseInt(date)) {
+      res.json({
+        unix: parseInt(date),
+        utc: new Date(parseInt(date)).toGMTString()
+      })
+    } else {
+      res.json({
+        error : "Invalid Date"
+      })
+    }
   }
-  res.json({ unix, utc });
 });
 
 // listen for requests :)
